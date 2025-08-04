@@ -5,7 +5,7 @@ More examples: https://github.com/CoreElectronics/CE-PiicoDev-Ultrasonic-Rangefi
 
 from PiicoDev_Ultrasonic import PiicoDev_Ultrasonic
 from PiicoDev_Unified import sleep_ms
- 
+
 ranger = PiicoDev_Ultrasonic() # Initialise the rangefinder
 
 while True:
