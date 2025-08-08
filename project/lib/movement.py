@@ -31,5 +31,6 @@ class Movement:
     def turn_left(self):
         if self.__debug:
             print("turning left")
-        self.__left_servo.set_duty(1300)
-        self.__right_servo.set_duty(1300)
+        self.__left_servo.set_duty(1500)
+        self.__right_servo.set_duty(1500)
+        #turn left goes faster than right for some reason
