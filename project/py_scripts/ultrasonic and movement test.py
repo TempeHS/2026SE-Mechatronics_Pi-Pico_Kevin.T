@@ -20,12 +20,14 @@ right_servo = Servo(
 )
 
 movement = Movement(left_servo, right_servo, False)
-ultrasonic = PiicoDev_Ultrasonic(id=[0, 0, 0, 0])
+front_us = PiicoDev_Ultrasonic(id=[0, 0, 0, 0])
+side_us = PiicoDev_Ultrasonic(id=[1, 0, 0, 0])
 
 while True:
-    print(f"Distance = {ultrasonic.distance_mm}mm")
-    if ultrasonic.distance_mm > 200:
+    print(f"Front: {front_us.distance_mm}mm, Side: {side_us.distance_mm}mm")
+    if front_us.distance_mm > 200:
         movement.forwards()
     else:
-        movement.stop()
+        movement.turn_right()
     sleep(0.1)
+

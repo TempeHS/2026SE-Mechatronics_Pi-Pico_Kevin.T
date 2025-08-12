@@ -4,7 +4,7 @@ from time import sleep
 
 sensor = PiicoDev_VEML6040()
 
-colour_sensor = Colour_sensor(sensor, False)
+colour_sensor = Colour_sensor(sensor, True)
 
 while True:
     print(colour_sensor.sense())
