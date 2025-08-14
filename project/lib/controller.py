@@ -1,5 +1,3 @@
-from time import sleep, time
-
 class Controller:
     def __init__(self, movement, front_us, side_us, colour_sensor, lcd, debug):
         self.__movement = movement
@@ -8,7 +6,7 @@ class Controller:
         self.__colour_sensor = colour_sensor
         self.__lcd = lcd
         self.state = "IDLE"
-        self.__last_state_change = time()
+        self.__last_state_change = rtc.datetime()[6]
         self.__debug = debug
     
     def read_dist(self):
@@ -53,22 +51,44 @@ class Controller:
         self.__movement.stop()
     
     def update(self):
-        time_now = time()
+        time_now = rtc.datetime()[6]
+        print(time_now)
         if self.state == "IDLE":
             self.set_idle_state()
             if time_now - self.__last_state_change >= 5:
                 self.set_forwards_state()
+                self.__last_state_change = time_now
+
         elif self.state == "FORWARDS":
             self.set_forwards_state()
             dist = self.read_dist()
-            if dist[0] <= 200:
+
+            # maybe change this value
+            detect_range = 200
+            # if front and side turn right
+            if dist[0] <= detect_range and dist[1] <= detect_range:
+                self.set_rturn_state()
+                self.__last_state_change = time_now
+            # if front and no side turn left
+            elif dist[0] <= detect_range and dist[1] >= detect_range:
                 self.set_lturn_state()
+                self.__last_state_change = time_now
+
         elif self.state == "BACKWARDS":
             self.set_backwards_state()
+
         elif self.state == "LTURN":
             self.set_lturn_state()
+            if time_now - self.__last_state_change >= 1:
+                self.set_forwards_state()
+                self.__last_state_change = time_now
+
         elif self.state == "RTURN":
             self.set_rturn_state()
+            if time_now - self.__last_state_change >= 1:
+                self.set_forwards_state()
+                self.__last_state_change = time_now
+
         else:
             self.set_error_state()
         
@@ -87,6 +107,9 @@ from colour_sensor import Colour_sensor
 from PiicoDev_VEML6040 import PiicoDev_VEML6040
 from PiicoDev_SSD1306 import *
 from time import sleep
+from machine import RTC
+
+rtc = RTC()
 
 servo_pwm_left = PWM(Pin(16))
 servo_pwm_right = PWM(Pin(15))
@@ -116,23 +139,23 @@ system = Controller(wheels, fus, sus, sensor, display, False)
 print("testing update")
 while True:
     system.update()
-    sleep(0.1)
+    sleep(0.01)
 
-# print("testing system")
-# sleep(2)
-# print("testing forwards state")
-# system.set_forwards_state()
-# sleep(2)
-# print("testing idle state")
-# system.set_idle_state()
-# sleep(2)
-# print("testing backwards state")
-# system.set_backwards_state()
-# sleep(2)
-# print("testing lturn state")
-# system.set_lturn_state()
-# sleep(2)
-# print("testing rturn state")
-# system.set_rturn_state()
-# sleep(2)
-# system.set_idle_state()
+print("testing system")
+sleep(2)
+print("testing forwards state")
+system.set_forwards_state()
+sleep(2)
+print("testing idle state")
+system.set_idle_state()
+sleep(2)
+print("testing backwards state")
+system.set_backwards_state()
+sleep(2)
+print("testing lturn state")
+system.set_lturn_state()
+sleep(2)
+print("testing rturn state")
+system.set_rturn_state()
+sleep(2)
+system.set_idle_state()
