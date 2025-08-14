@@ -1,3 +1,5 @@
+from time import sleep
+
 class Movement:
     def __init__(self, left_servo, right_servo, debug):
         self.__left_servo = left_servo
@@ -32,5 +34,4 @@ class Movement:
         if self.__debug:
             print("turning left")
         self.__left_servo.set_duty(1500)
-        self.__right_servo.set_duty(2000)
-        # it dont werk 💔
+        self.__right_servo.set_duty(1000)
