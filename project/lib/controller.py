@@ -53,13 +53,16 @@ class Controller:
         self.__movement.stop()
     
     def update(self):
-        time_now = time.now()
+        time_now = time()
         if self.state == "IDLE":
             self.set_idle_state()
-            if self.__last_state_change - time_now >= 5:
+            if time_now - self.__last_state_change >= 5:
                 self.set_forwards_state()
         elif self.state == "FORWARDS":
             self.set_forwards_state()
+            dist = self.read_dist()
+            if dist[0] <= 200:
+                self.set_lturn_state()
         elif self.state == "BACKWARDS":
             self.set_backwards_state()
         elif self.state == "LTURN":
@@ -68,6 +71,10 @@ class Controller:
             self.set_rturn_state()
         else:
             self.set_error_state()
+        
+        self.__lcd.fill(0)
+        self.__lcd.text(self.state, 30, 20, 1)
+        self.__lcd.show()
 
 
 
@@ -94,7 +101,7 @@ right_servo = Servo(
     pwm=servo_pwm_right, min_us=min_us, max_us=max_us, dead_zone_us=dead_zone_us, freq=freq
 )
 
-wheels = Movement(left_servo, right_servo, True)
+wheels = Movement(left_servo, right_servo, False)
 
 fus = PiicoDev_Ultrasonic(id=[0, 0, 0, 0])
 sus = PiicoDev_Ultrasonic(id=[1, 0, 0, 0])
@@ -104,28 +111,28 @@ sensor = PiicoDev_VEML6040()
 display = create_PiicoDev_SSD1306()
 
 
-system = Controller(wheels, fus, sus, sensor, display, True)
+system = Controller(wheels, fus, sus, sensor, display, False)
 
-# # Text and numbers
-# for counter in range(0,101):
-#     display.fill(0)
-#     display.text("PiicoDev",30,20, 1)
+print("testing update")
+while True:
+    system.update()
+    sleep(0.1)
 
-print("testing system")
-sleep(2)
-print("testing forwards state")
-system.set_forwards_state()
-sleep(2)
-print("testing idle state")
-system.set_idle_state()
-sleep(2)
-print("testing backwards state")
-system.set_backwards_state()
-sleep(2)
-print("testing lturn state")
-system.set_lturn_state()
-sleep(2)
-print("testing rturn state")
-system.set_rturn_state()
-sleep(2)
-system.set_idle_state()
+# print("testing system")
+# sleep(2)
+# print("testing forwards state")
+# system.set_forwards_state()
+# sleep(2)
+# print("testing idle state")
+# system.set_idle_state()
+# sleep(2)
+# print("testing backwards state")
+# system.set_backwards_state()
+# sleep(2)
+# print("testing lturn state")
+# system.set_lturn_state()
+# sleep(2)
+# print("testing rturn state")
+# system.set_rturn_state()
+# sleep(2)
+# system.set_idle_state()
