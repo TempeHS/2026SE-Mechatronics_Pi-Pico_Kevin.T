@@ -6,7 +6,7 @@ class Controller:
         self.__colour_sensor = colour_sensor
         self.__lcd = lcd
         self.state = "IDLE"
-        self.__last_state_change = rtc.datetime()[6]
+        self.__last_state_change = time()
         self.__debug = debug
     
     def read_dist(self):
@@ -51,7 +51,7 @@ class Controller:
         self.__movement.stop()
     
     def update(self):
-        time_now = rtc.datetime()[6]
+        time_now = time()
         print(time_now)
         if self.state == "IDLE":
             self.set_idle_state()
@@ -98,9 +98,6 @@ class Controller:
         self.__lcd.text(self.state, 30, 20, 1)
         self.__lcd.show()
 
-
-
-# testing
 from machine import Pin, PWM
 from movement import Movement
 from servo import Servo
@@ -108,10 +105,9 @@ from PiicoDev_Ultrasonic import PiicoDev_Ultrasonic
 from colour_sensor import Colour_sensor
 from PiicoDev_VEML6040 import PiicoDev_VEML6040
 from PiicoDev_SSD1306 import *
-from time import sleep
-from machine import RTC
+from controller import Controller
+from time import sleep, time
 
-rtc = RTC()
 
 servo_pwm_left = PWM(Pin(16))
 servo_pwm_right = PWM(Pin(15))
