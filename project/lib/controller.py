@@ -79,12 +79,14 @@ class Controller:
 
         elif self.state == "LTURN":
             self.set_lturn_state()
+            # 1 second duration
             if time_now - self.__last_state_change >= 1:
                 self.set_forwards_state()
                 self.__last_state_change = time_now
 
         elif self.state == "RTURN":
             self.set_rturn_state()
+            # 1 second duration
             if time_now - self.__last_state_change >= 1:
                 self.set_forwards_state()
                 self.__last_state_change = time_now
