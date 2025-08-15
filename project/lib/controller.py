@@ -61,35 +61,35 @@ class Controller:
 
         elif self.state == "FORWARDS":
             self.set_forwards_state()
-            dist = self.read_dist()
 
-            # maybe change this value
-            detect_range = 200
-            # if front and side turn right
-            if dist[0] <= detect_range and dist[1] <= detect_range:
-                self.set_rturn_state()
-                self.__last_state_change = time_now
-            # if front and no side turn left
-            elif dist[0] <= detect_range and dist[1] >= detect_range:
+            # wall following is here
+            dist = self.read_dist()
+            detect_range = 150
+
+            if dist[1] >= detect_range:
                 self.set_lturn_state()
-                self.__last_state_change = time_now
+            elif dist[1] <= detect_range:
+                self.set_rturn_state()
+            
 
         elif self.state == "BACKWARDS":
             self.set_backwards_state()
 
         elif self.state == "LTURN":
             self.set_lturn_state()
-            # 1 second duration
-            if time_now - self.__last_state_change >= 1:
-                self.set_forwards_state()
-                self.__last_state_change = time_now
+
+            # # 1 second duration
+            # if time_now - self.__last_state_change >= 1:
+            #     self.set_forwards_state()
+            #     self.__last_state_change = time_now
 
         elif self.state == "RTURN":
             self.set_rturn_state()
-            # 1 second duration
-            if time_now - self.__last_state_change >= 1:
-                self.set_forwards_state()
-                self.__last_state_change = time_now
+
+            # # 1 second duration
+            # if time_now - self.__last_state_change >= 1:
+            #     self.set_forwards_state()
+            #     self.__last_state_change = time_now
 
         else:
             self.set_error_state()
@@ -97,6 +97,8 @@ class Controller:
         self.__lcd.fill(0)
         self.__lcd.text(self.state, 30, 20, 1)
         self.__lcd.show()
+
+# test is here coz the time() in controller doesnt work in another file
 
 from machine import Pin, PWM
 from movement import Movement
