@@ -49,6 +49,12 @@ class Controller:
             print("ERROR state")
         self.state = "ERROR"
         self.__movement.stop()
+
+    def set_detected_state(self):
+        if self.__debug:
+            print("DETECTED state")
+        self.state = "DETECTED"
+        self.__movement.stop()
     
     def update(self):
         time_now = time()
@@ -66,34 +72,44 @@ class Controller:
             dist = self.read_dist()
             detect_range = 150
 
+            ######################################still need to do t.s
             if dist[1] >= detect_range:
                 self.set_lturn_state()
             elif dist[1] <= detect_range:
                 self.set_rturn_state()
-            
+
+            # colour sensing
+            if self.__colour_sensor.sense():
+                self.set_detected_state()
 
         elif self.state == "BACKWARDS":
             self.set_backwards_state()
 
         elif self.state == "LTURN":
             self.set_lturn_state()
-
-            # # 1 second duration
-            # if time_now - self.__last_state_change >= 1:
-            #     self.set_forwards_state()
-            #     self.__last_state_change = time_now
+            # 1 second duration
+            if time_now - self.__last_state_change >= 1:
+                self.set_forwards_state()
+                self.__last_state_change = time_now
 
         elif self.state == "RTURN":
             self.set_rturn_state()
+            # 1 second duration
+            if time_now - self.__last_state_change >= 1:
+                self.set_forwards_state()
+                self.__last_state_change = time_now
 
-            # # 1 second duration
-            # if time_now - self.__last_state_change >= 1:
-            #     self.set_forwards_state()
-            #     self.__last_state_change = time_now
+        elif self.state == "DETECTED":
+            self.set_detected_state()
+            # 3 second duration
+            if time_now - self.__last_state_change >= 3:
+                self.set_forwards_state()
+                self.__last_state_change = time_now
 
         else:
             self.set_error_state()
-        
+
+        # update lcd with state
         self.__lcd.fill(0)
         self.__lcd.text(self.state, 30, 20, 1)
         self.__lcd.show()
