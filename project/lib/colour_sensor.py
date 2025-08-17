@@ -10,7 +10,7 @@ class Colour_sensor:
         
         hue = hsv["hue"]
         if hue > 75 and hue < 85:
-            return "green"
+            return True
         else:
-            return "not green"
+            return False
         # detects blue as green but i am nat fixing that
