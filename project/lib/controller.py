@@ -69,15 +69,17 @@ class Controller:
 
             # wall following is here
             fdist, sdist = self.read_dist()
-            detect_range = 150
+            detect_range = 100
 
             ###### need to add a delay before it turns so it doesnt run into the wall
             # if side no wall then left
             if sdist >= detect_range:
+                sleep(0.1) # little delay before turning
                 self.set_lturn_state()
             
             # if side wall and front wall then right
             if sdist <= detect_range and fdist <= detect_range:
+                sleep(0.1)
                 self.set_rturn_state()
 
             # colour sensing
@@ -148,7 +150,7 @@ wheels = Movement(left_servo, right_servo, False)
 fus = PiicoDev_Ultrasonic(id=[0, 0, 0, 0])
 sus = PiicoDev_Ultrasonic(id=[1, 0, 0, 0])
 
-sensor = PiicoDev_VEML6040()q
+sensor = PiicoDev_VEML6040()
 
 colour_sensor = Colour_sensor(sensor, False)
 
