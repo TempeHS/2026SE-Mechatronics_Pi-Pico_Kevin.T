@@ -58,7 +58,6 @@ class Controller:
     
     def update(self):
         time_now = time()
-        print(time_now)
         if self.state == "IDLE":
             self.set_idle_state()
             if time_now - self.__last_state_change >= 5:
@@ -69,13 +68,16 @@ class Controller:
             self.set_forwards_state()
 
             # wall following is here
-            dist = self.read_dist()
+            fdist, sdist = self.read_dist()
             detect_range = 150
 
-            ######################################still need to do t.s
-            if dist[1] >= detect_range:
+            ###### need to add a delay before it turns so it doesnt run into the wall
+            # if side no wall then left
+            if sdist >= detect_range:
                 self.set_lturn_state()
-            elif dist[1] <= detect_range:
+            
+            # if side wall and front wall then right
+            if sdist <= detect_range and fdist <= detect_range:
                 self.set_rturn_state()
 
             # colour sensing
@@ -88,6 +90,7 @@ class Controller:
         elif self.state == "LTURN":
             self.set_lturn_state()
             # 1 second duration
+            # may need to change this to a sleep or something so its more accurate coz riht now it runs on a global clock instead of a time period after right now
             if time_now - self.__last_state_change >= 1:
                 self.set_forwards_state()
                 self.__last_state_change = time_now
@@ -145,12 +148,15 @@ wheels = Movement(left_servo, right_servo, False)
 fus = PiicoDev_Ultrasonic(id=[0, 0, 0, 0])
 sus = PiicoDev_Ultrasonic(id=[1, 0, 0, 0])
 
-sensor = PiicoDev_VEML6040()
+sensor = PiicoDev_VEML6040()q
+
+colour_sensor = Colour_sensor(sensor, False)
+
 
 display = create_PiicoDev_SSD1306()
 
 
-system = Controller(wheels, fus, sus, sensor, display, False)
+system = Controller(wheels, fus, sus, colour_sensor, display, False)
 
 print("testing update")
 while True:

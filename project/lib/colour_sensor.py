@@ -6,7 +6,7 @@ class Colour_sensor:
     def sense(self):
         hsv = self.__colour_sensor.readHSV()
         if self.__debug:
-            print("sensing: " + hsv)
+            print("sensing: " + str(hsv))
         
         hue = hsv["hue"]
         if hue > 75 and hue < 85:
