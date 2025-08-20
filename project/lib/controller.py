@@ -74,12 +74,12 @@ class Controller:
             ###### need to add a delay before it turns so it doesnt run into the wall
             # if side no wall then left
             if sdist >= detect_range:
-                sleep(0.1) # little delay before turning
+                sleep_ms(500) # little delay before turning
                 self.set_lturn_state()
             
             # if side wall and front wall then right
             if sdist <= detect_range and fdist <= detect_range:
-                sleep(0.1)
+                sleep_ms(500)
                 self.set_rturn_state()
 
             # colour sensing
@@ -92,24 +92,35 @@ class Controller:
         elif self.state == "LTURN":
             self.set_lturn_state()
             # 1 second duration
+            sleep_ms(990)
+            self.set_forwards_state()
+            sleep_ms(500)
+
             # may need to change this to a sleep or something so its more accurate coz riht now it runs on a global clock instead of a time period after right now
-            if time_now - self.__last_state_change >= 1:
-                self.set_forwards_state()
-                self.__last_state_change = time_now
+            # if time_now - self.__last_state_change >= 1:
+            #     self.set_forwards_state()
+            #     self.__last_state_change = time_now
 
         elif self.state == "RTURN":
             self.set_rturn_state()
             # 1 second duration
-            if time_now - self.__last_state_change >= 1:
-                self.set_forwards_state()
-                self.__last_state_change = time_now
+            sleep_ms(990)
+            self.set_forwards_state()
+            sleep_ms(500)
+
+            # if time_now - self.__last_state_change >= 1:
+            #     self.set_forwards_state()
+            #     self.__last_state_change = time_now
 
         elif self.state == "DETECTED":
             self.set_detected_state()
             # 3 second duration
-            if time_now - self.__last_state_change >= 3:
-                self.set_forwards_state()
-                self.__last_state_change = time_now
+            sleep_ms(3000)
+            self.set_forwards_state()
+
+            # if time_now - self.__last_state_change >= 3:
+            #     self.set_forwards_state()
+            #     self.__last_state_change = time_now
 
         else:
             self.set_error_state()
