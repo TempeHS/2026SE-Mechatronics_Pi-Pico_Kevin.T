@@ -1,3 +1,5 @@
+from time import sleep_ms
+
 class Controller:
     def __init__(self, movement, front_us, side_us, colour_sensor, lcd, debug):
         self.__movement = movement
@@ -6,7 +8,6 @@ class Controller:
         self.__colour_sensor = colour_sensor
         self.__lcd = lcd
         self.state = "IDLE"
-        self.__last_state_change = time()
         self.__debug = debug
     
     def read_dist(self):
@@ -57,12 +58,10 @@ class Controller:
         self.__movement.stop()
     
     def update(self):
-        time_now = time()
         if self.state == "IDLE":
             self.set_idle_state()
-            if time_now - self.__last_state_change >= 5:
-                self.set_forwards_state()
-                self.__last_state_change = time_now
+            sleep_ms(5000)
+            self.set_forwards_state()
 
         elif self.state == "FORWARDS":
             self.set_forwards_state()
@@ -71,7 +70,6 @@ class Controller:
             fdist, sdist = self.read_dist()
             detect_range = 100
 
-            ###### need to add a delay before it turns so it doesnt run into the wall
             # if side no wall then left
             if sdist >= detect_range:
                 sleep_ms(500) # little delay before turning
@@ -96,11 +94,6 @@ class Controller:
             self.set_forwards_state()
             sleep_ms(500)
 
-            # may need to change this to a sleep or something so its more accurate coz riht now it runs on a global clock instead of a time period after right now
-            # if time_now - self.__last_state_change >= 1:
-            #     self.set_forwards_state()
-            #     self.__last_state_change = time_now
-
         elif self.state == "RTURN":
             self.set_rturn_state()
             # 1 second duration
@@ -108,19 +101,11 @@ class Controller:
             self.set_forwards_state()
             sleep_ms(500)
 
-            # if time_now - self.__last_state_change >= 1:
-            #     self.set_forwards_state()
-            #     self.__last_state_change = time_now
-
         elif self.state == "DETECTED":
             self.set_detected_state()
             # 3 second duration
             sleep_ms(3000)
             self.set_forwards_state()
-
-            # if time_now - self.__last_state_change >= 3:
-            #     self.set_forwards_state()
-            #     self.__last_state_change = time_now
 
         else:
             self.set_error_state()
@@ -132,65 +117,3 @@ class Controller:
 
 # test is here coz the time() in controller doesnt work in another file
 
-from machine import Pin, PWM
-from movement import Movement
-from servo import Servo
-from PiicoDev_Ultrasonic import PiicoDev_Ultrasonic
-from colour_sensor import Colour_sensor
-from PiicoDev_VEML6040 import PiicoDev_VEML6040
-from PiicoDev_SSD1306 import *
-from controller import Controller
-from time import sleep, time
-
-
-servo_pwm_left = PWM(Pin(16))
-servo_pwm_right = PWM(Pin(15))
-freq = 50
-min_us = 500
-max_us = 2500
-dead_zone_us = 1500
-left_servo = Servo(
-    pwm=servo_pwm_left, min_us=min_us, max_us=max_us, dead_zone_us=dead_zone_us, freq=freq
-)
-right_servo = Servo(
-    pwm=servo_pwm_right, min_us=min_us, max_us=max_us, dead_zone_us=dead_zone_us, freq=freq
-)
-
-wheels = Movement(left_servo, right_servo, False)
-
-fus = PiicoDev_Ultrasonic(id=[0, 0, 0, 0])
-sus = PiicoDev_Ultrasonic(id=[1, 0, 0, 0])
-
-sensor = PiicoDev_VEML6040()
-
-colour_sensor = Colour_sensor(sensor, False)
-
-
-display = create_PiicoDev_SSD1306()
-
-
-system = Controller(wheels, fus, sus, colour_sensor, display, False)
-
-print("testing update")
-while True:
-    system.update()
-    sleep(0.01)
-
-print("testing system")
-sleep(2)
-print("testing forwards state")
-system.set_forwards_state()
-sleep(2)
-print("testing idle state")
-system.set_idle_state()
-sleep(2)
-print("testing backwards state")
-system.set_backwards_state()
-sleep(2)
-print("testing lturn state")
-system.set_lturn_state()
-sleep(2)
-print("testing rturn state")
-system.set_rturn_state()
-sleep(2)
-system.set_idle_state()
