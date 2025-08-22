@@ -1,5 +1,9 @@
 from time import sleep_ms
 
+'''
+
+'''
+
 class Controller:
     def __init__(self, movement, front_us, side_us, colour_sensor, lcd, debug):
         self.__movement = movement
@@ -66,9 +70,9 @@ class Controller:
         elif self.state == "FORWARDS":
             self.set_forwards_state()
 
-            # wall following is here
+            ### wall following is here
             fdist, sdist = self.read_dist()
-            detect_range = 100
+            detect_range = 150
 
             # if side no wall then left
             if sdist >= detect_range:
@@ -114,6 +118,4 @@ class Controller:
         self.__lcd.fill(0)
         self.__lcd.text(self.state, 30, 20, 1)
         self.__lcd.show()
-
-# test is here coz the time() in controller doesnt work in another file
 

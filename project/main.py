@@ -4,7 +4,7 @@ from machine import Pin
 
 
 # File name of the script to import
-file_name = "controller_test"
+file_name = "the thing that runs it"
 
 # Add the path to the sys.path
 sys.path.append("/py_scripts")

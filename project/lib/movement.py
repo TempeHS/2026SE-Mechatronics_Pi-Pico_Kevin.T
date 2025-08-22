@@ -1,3 +1,8 @@
+'''
+this class serves to control two servos facing in opposite directions together to move in certain directions
+it uses the Servo class from servo.py
+'''
+
 class Movement:
     def __init__(self, left_servo, right_servo, debug):
         self.__left_servo = left_servo
